@@ -1,4 +1,4 @@
-name: Build and Upload React
+name: Deploy App
 on: 
   workflow_call:
     inputs:
@@ -25,7 +25,7 @@ on:
         default: dev
         type: string
 jobs:
-  build-upload:
+  deploy-app:
     environment: ${{github.event.inputs.environment}}
     env:
       ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'

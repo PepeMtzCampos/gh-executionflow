@@ -15,10 +15,10 @@ jobs:
     runs-on: [ubuntu-latest]
     outputs:
       build_number: ${{ steps.calculate-build-number.outputs.build_number }}
-      environment: ${{ steps.calculate-build-number.outputs.environment }}
+      environment: ${{ steps.set-environment.outputs.environment }}
     steps:
       - name: Calculate Environment and Build Number
-        id: calculate-environment-build-number
+        id: calculate-build-number
         run: |
           code_version=${{ vars.CODE_VERSION }}
           run_number=${{ github.event.inputs.run_number != '' && github.event.inputs.run_number || github.run_number }}
@@ -36,6 +36,9 @@ jobs:
             environment=test
           fi
           echo "environment=$environment" >> $GITHUB_OUTPUT
+      - name: Print environment
+        run: |
+          echo "Environment: ${{ steps.set-environment.outputs.environment }}"          
   build-upload-app:
     needs: calculate-environment-build-number
     uses: ./.github/workflows/build-upload-react.yml
