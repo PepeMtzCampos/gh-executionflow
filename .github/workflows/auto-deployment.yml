@@ -12,7 +12,7 @@ on:
           default: ''
 jobs:
   calculate-environment-build-number:
-    runs-on: [ GM-DBT-DEV-Ubuntu-Latest-64 ]
+    runs-on: [ubuntu-latest]
     outputs:
       build_number: ${{ steps.calculate-build-number.outputs.build_number }}
       environment: ${{ steps.calculate-build-number.outputs.environment }}
