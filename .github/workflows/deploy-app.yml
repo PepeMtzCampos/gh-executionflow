@@ -12,18 +12,18 @@ on:
         required: true
         default: dev
         type: string
-  workflow_dispatch:
-    inputs:
-      build_number:
-        description: Unique identifier for this build
-        required: true
-        default: ''
-        type: string       
-      environment:
-        description: Environment to build
-        required: true
-        default: dev
-        type: string
+  # workflow_dispatch:
+  #   inputs:
+  #     build_number:
+  #       description: Unique identifier for this build
+  #       required: true
+  #       default: ''
+  #       type: string       
+  #     environment:
+  #       description: Environment to build
+  #       required: true
+  #       default: dev
+  #       type: string
 jobs:
   deploy-app:
     environment: ${{github.event.inputs.environment}}
