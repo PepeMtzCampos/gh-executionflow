@@ -1,0 +1,52 @@
+name: Auto Deployment
+on:
+  push:
+    branches:
+      - develop
+      - release/*
+  workflow_dispatch:
+      inputs:
+        run_number:
+          description: 'Overwrite run number'
+          required: false
+          default: ''
+jobs:
+  calculate-environment-build-number:
+    runs-on: [ GM-DBT-DEV-Ubuntu-Latest-64 ]
+    outputs:
+      build_number: ${{ steps.calculate-build-number.outputs.build_number }}
+      environment: ${{ steps.calculate-build-number.outputs.environment }}
+    steps:
+      - name: Calculate Environment and Build Number
+        id: calculate-environment-build-number
+        run: |
+          code_version=${{ vars.CODE_VERSION }}
+          run_number=${{ github.event.inputs.run_number != '' && github.event.inputs.run_number || github.run_number }}
+          build_number=$(echo $code_version | sed "s/x/$run_number/")          
+          echo "build_number=$build_number" >> $GITHUB_OUTPUT
+      - name: Print build number
+        run: |
+          echo "Build Number: ${{ steps.calculate-build-number.outputs.build_number }}"
+      - name: Set Environment
+        id: set-environment
+        run: |
+          if [[ ${{ github.ref }} == 'refs/heads/develop' ]]; then
+            environment=dev
+          elif [[ ${{ github.ref }} == 'refs/heads/release/'* ]]; then
+            environment=test
+          fi
+          echo "environment=$environment" >> $GITHUB_OUTPUT
+  build-upload-app:
+    needs: calculate-environment-build-number
+    uses: ./.github/workflows/build-upload-react.yml
+    with:
+      build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
+      environment: ${{ needs.calculate-environment-build-number.outputs.environment }}
+  deploy-app:
+    needs:
+      - calculate-environment-build-number
+      - build-upload-app
+    uses: ./.github/workflows/deploy-app.yml
+    with:
+      build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
+      environment: ${{ needs.calculate-environment-build-number.outputs.environment }}

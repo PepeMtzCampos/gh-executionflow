@@ -1,0 +1,50 @@
+name: Build and Upload React
+on: 
+  workflow_call:
+    inputs:
+      build_number:
+        description: Unique identifier for this build
+        required: true
+        default: ''
+        type: string
+      environment:
+        description: Environment to build
+        required: true
+        default: dev
+        type: string
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: Unique identifier for this build
+        required: true
+        default: ''
+        type: string       
+      environment:
+        description: Environment to build
+        required: true
+        default: dev
+        type: string
+jobs:
+  build-upload:
+    environment: ${{github.event.inputs.environment}}
+    env:
+      ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
+      REGISTRY_URL: ${{ vars.REGISTRY_URL }}
+      ARTIFACT_FOLDER: ${{ vars.ARTIFACT_FOLDER }}${{ vars.FOLDER_SUFFIX }}
+      IMAGE_FOLDER: ${{ vars.IMAGE_FOLDER }}${{ vars.FOLDER_SUFFIX }}
+      NAMESPACE: ${{ vars.ASMS }}-${{github.event.inputs.environment}}
+      DEPLOYMENT_FILE: k8s-${{github.event.inputs.environment}}-deployment.yaml    
+    runs-on: ubuntu-latest
+    steps:
+      - name: Printing inputs
+        run: |
+          echo "Build Number: ${{github.event.inputs.build_number}}"
+          echo "Environment: ${{github.event.inputs.environment}}"
+      - name: Printing env variables
+        run: |
+          echo "ARTIFACTORY_URL: ${{env.ARTIFACTORY_URL}}"
+          echo "REGISTRY_URL: ${{env.REGISTRY_URL}}"
+          echo "ARTIFACT_FOLDER: ${{env.ARTIFACT_FOLDER}}"
+          echo "IMAGE_FOLDER: ${{env.IMAGE_FOLDER}}"
+          echo "NAMESPACE: ${{env.NAMESPACE}}"
+          echo "DEPLOYMENT_FILE: ${{env.DEPLOYMENT_FILE}}"
