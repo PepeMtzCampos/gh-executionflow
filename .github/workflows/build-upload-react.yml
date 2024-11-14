@@ -25,7 +25,7 @@ on:
   #       default: dev
   #       type: string
 jobs:
-  build-upload:
+  build-upload-react:
     environment: ${{github.event.inputs.environment}}
     env:
       ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
@@ -38,8 +38,10 @@ jobs:
     steps:
       - name: Printing github.event object
         run: |
-          echo "${{ toJson(github.event) }}"  
-          echo "${{ toJson(github.event.inputs) }}"     
+          echo "${{ toJson(github.event) }}" 
+      - name: Printing github.event.inputs object
+        run: | 
+          echo "${{ toJson(github.event.inputs) }}"              
       - name: Printing inputs
         run: |
           echo "Build Number: ${{github.event.inputs.build_number}}"
