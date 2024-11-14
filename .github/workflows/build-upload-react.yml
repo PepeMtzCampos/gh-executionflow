@@ -36,6 +36,9 @@ jobs:
       DEPLOYMENT_FILE: k8s-${{github.event.inputs.environment}}-deployment.yaml    
     runs-on: ubuntu-latest
     steps:
+      - name: Printing github object
+        run: |
+          echo "${{ toJson(github) }}"      
       - name: Printing inputs
         run: |
           echo "Build Number: ${{github.event.inputs.build_number}}"
