@@ -36,6 +36,11 @@ jobs:
       DEPLOYMENT_FILE: k8s-${{ github.event_name == 'workflow_call' && inputs.environment || github.event.inputs.environment }}-deployment.yaml    
     runs-on: ubuntu-latest
     steps:
+      - name: Output information
+        run: |
+          printenv
+          echo "${{ github.event_name }}"
+          echo "${{ toJson(github) }}"
       - name: Printing inputs for workflow_call
         if: ${{ github.event_name == 'workflow_call' }}
         run: |
