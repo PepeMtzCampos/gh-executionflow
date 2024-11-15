@@ -46,8 +46,8 @@ jobs:
     needs: calculate-environment-build-number
     uses: ./.github/workflows/build-upload-react.yml
     with:
-      repository: "this"
-      branch: "this"
+      repository: ${{ github.repository }}
+      branch: ${{ github.ref }}
       build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
       environment: ${{ needs.calculate-environment-build-number.outputs.environment }}
       folder_suffix: ${{ vars.FOLDER_SUFFIX }}
@@ -57,8 +57,8 @@ jobs:
       - build-upload-app
     uses: ./.github/workflows/deploy-app.yml
     with:
-      repository: "this"
-      branch: "this"
+      repository: ${{ github.repository }}
+      branch: ${{ github.ref }}
       build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
       environment: ${{ needs.calculate-environment-build-number.outputs.environment }}
       folder_suffix: ${{ vars.FOLDER_SUFFIX }}
