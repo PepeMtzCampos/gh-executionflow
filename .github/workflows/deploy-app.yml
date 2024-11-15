@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       build_number:
-        description: Unique identifier for this build
+        description: Build Number
         required: true
         default: ''
         type: string
@@ -15,10 +15,10 @@ on:
   workflow_dispatch:
     inputs:
       build_number:
-        description: Unique identifier for this build
+        description: Build Number
         required: true
         default: ''
-        type: string       
+        type: string
       environment:
         description: Environment to build
         required: true
