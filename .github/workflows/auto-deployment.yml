@@ -17,6 +17,9 @@ jobs:
       build_number: ${{ steps.calculate-build-number.outputs.build_number }}
       environment: ${{ steps.set-environment.outputs.environment }}
     steps:
+      - name: Printing traceability
+        run: |
+          echo "Running in ${{ github.repository }}"
       - name: Set Environment
         id: set-environment
         run: |
@@ -44,15 +47,21 @@ jobs:
           echo "Build Number: ${{ steps.calculate-build-number.outputs.build_number }}"
   build-upload-app:
     needs: calculate-environment-build-number
-    uses: ./.github/workflows/build-upload-react.yml
+    uses: PepeMtzCampos/gha-env/.github/workflows/build-upload-react.yml@1fa3887c06d971039b52815ff07b5c6a55920a55
     with:
+      repository: ${{ github.repository }}
+      branch: ${{ github.ref }}
       build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
       environment: ${{ needs.calculate-environment-build-number.outputs.environment }}
+      folder_suffix: ${{ vars.FOLDER_SUFFIX }}
   deploy-app:
     needs:
       - calculate-environment-build-number
       - build-upload-app
-    uses: ./.github/workflows/deploy-app.yml
+    uses: PepeMtzCampos/gha-env/.github/workflows/deploy-app.yml@1fa3887c06d971039b52815ff07b5c6a55920a55
     with:
+      repository: ${{ github.repository }}
+      branch: ${{ github.ref }}
       build_number: ${{ needs.calculate-environment-build-number.outputs.build_number }}
       environment: ${{ needs.calculate-environment-build-number.outputs.environment }}
+      folder_suffix: ${{ vars.FOLDER_SUFFIX }}
