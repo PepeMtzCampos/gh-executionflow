@@ -26,14 +26,14 @@ on:
         type: string
 jobs:
   deploy-app:
-    environment: ${{inputs.environment}}
+    environment: ${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
     env:
       ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
       REGISTRY_URL: ${{ vars.REGISTRY_URL }}
       ARTIFACT_FOLDER: ${{ vars.ARTIFACT_FOLDER }}${{ vars.FOLDER_SUFFIX }}
       IMAGE_FOLDER: ${{ vars.IMAGE_FOLDER }}${{ vars.FOLDER_SUFFIX }}
-      NAMESPACE: ${{ vars.ASMS }}-${{ github.event_name == 'workflow_call' && inputs.environment || github.event.inputs.environment }}
-      DEPLOYMENT_FILE: k8s-${{ github.event_name == 'workflow_call' && inputs.environment || github.event.inputs.environment }}-deployment.yaml    
+      NAMESPACE: ${{ vars.ASMS }}-${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
+      DEPLOYMENT_FILE: k8s-${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}-deployment.yaml    
     runs-on: ubuntu-latest
     steps:
       - name: Output information
@@ -42,12 +42,12 @@ jobs:
           echo "${{ github.event_name }}"
           echo "${{ toJson(github) }}"
       - name: Printing inputs for workflow_call
-        if: ${{ github.event_name == 'workflow_call' }}
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: |
           echo "Build Number: ${{ inputs.build_number }}"
           echo "Environment: ${{ inputs.environment }}"
       - name: Printing inputs for workflow_dispatch
-        if: ${{ github.event_name != 'workflow_call' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           echo "Build Number: ${{ github.event.inputs.build_number }}"
           echo "Environment: ${{ github.event.inputs.environment }}"
