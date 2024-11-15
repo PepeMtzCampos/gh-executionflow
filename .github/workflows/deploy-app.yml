@@ -12,18 +12,18 @@ on:
         required: true
         default: dev
         type: string
-  # workflow_dispatch:
-  #   inputs:
-  #     build_number:
-  #       description: Unique identifier for this build
-  #       required: true
-  #       default: ''
-  #       type: string       
-  #     environment:
-  #       description: Environment to build
-  #       required: true
-  #       default: dev
-  #       type: string
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: Unique identifier for this build
+        required: true
+        default: ''
+        type: string       
+      environment:
+        description: Environment to build
+        required: true
+        default: dev
+        type: string
 jobs:
   deploy-app:
     environment: ${{inputs.environment}}
@@ -32,17 +32,20 @@ jobs:
       REGISTRY_URL: ${{ vars.REGISTRY_URL }}
       ARTIFACT_FOLDER: ${{ vars.ARTIFACT_FOLDER }}${{ vars.FOLDER_SUFFIX }}
       IMAGE_FOLDER: ${{ vars.IMAGE_FOLDER }}${{ vars.FOLDER_SUFFIX }}
-      NAMESPACE: ${{ vars.ASMS }}-${{inputs.environment}}
-      DEPLOYMENT_FILE: k8s-${{inputs.environment}}-deployment.yaml    
+      NAMESPACE: ${{ vars.ASMS }}-${{ github.event_name == 'workflow_call' && inputs.environment || github.event.inputs.environment }}
+      DEPLOYMENT_FILE: k8s-${{ github.event_name == 'workflow_call' && inputs.environment || github.event.inputs.environment }}-deployment.yaml    
     runs-on: ubuntu-latest
     steps:
-      - name: Printing inputs object
-        run: | 
-          echo "${{ toJson(inputs) }}"              
-      - name: Printing inputs
+      - name: Printing inputs for workflow_call
+        if: ${{ github.event_name == 'workflow_call' }}
         run: |
-          echo "Build Number: ${{inputs.build_number}}"
-          echo "Environment: ${{inputs.environment}}"
+          echo "Build Number: ${{ inputs.build_number }}"
+          echo "Environment: ${{ inputs.environment }}"
+      - name: Printing inputs for workflow_dispatch
+        if: ${{ github.event_name != 'workflow_call' }}
+        run: |
+          echo "Build Number: ${{ github.event.inputs.build_number }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
       - name: Printing env variables
         run: |
           echo "ARTIFACTORY_URL: ${{env.ARTIFACTORY_URL}}"
