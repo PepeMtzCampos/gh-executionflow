@@ -58,8 +58,8 @@ jobs:
   build-upload-react:
     environment: ${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
     env:
-      REPOSITORY: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
-      BRANCH: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
+      REPOSITORY: ${{ github.event_name != 'workflow_dispatch' && inputs.repository || github.event.inputs.repository }}
+      BRANCH: ${{ github.event_name != 'workflow_dispatch' && inputs.branch || github.event.inputs.branch }}
       BUILD_NUMBER: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
       ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
       REGISTRY_URL: ${{ vars.REGISTRY_URL }}
@@ -76,6 +76,8 @@ jobs:
       #     echo "${{ github.event_name }}"
       - name: Printing env variables
         run: |
+          echo "REPOSITORY: ${{env.REPOSITORY}}"
+          echo "BRANCH: ${{env.BRANCH}}"
           echo "BUILD_NUMBER: ${{env.BUILD_NUMBER}}" 
           echo "ARTIFACTORY_URL: ${{env.ARTIFACTORY_URL}}"
           echo "REGISTRY_URL: ${{env.REGISTRY_URL}}"

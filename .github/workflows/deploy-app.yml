@@ -58,8 +58,8 @@ jobs:
   deploy-app:
     environment: ${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
     env:
-      REPOSITORY: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
-      BRANCH: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
+      REPOSITORY: ${{ github.event_name != 'workflow_dispatch' && inputs.repository || github.event.inputs.repository }}
+      BRANCH: ${{ github.event_name != 'workflow_dispatch' && inputs.branch || github.event.inputs.branch }}
       BUILD_NUMBER: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
       ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
       REGISTRY_URL: ${{ vars.REGISTRY_URL }}
