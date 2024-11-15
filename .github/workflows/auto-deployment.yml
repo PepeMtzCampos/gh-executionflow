@@ -23,10 +23,10 @@ jobs:
       - name: Set Environment
         id: set-environment
         run: |
-          if [[ ${{ github.ref }} == 'refs/heads/develop' ]]; then
-            environment=dev
-          elif [[ ${{ github.ref }} == 'refs/heads/release/'* ]]; then
+          if [[ ${{ github.ref }} == 'refs/heads/release/'* ]]; then
             environment=test
+          else
+            environment=dev
           fi
           echo "environment=$environment" >> $GITHUB_OUTPUT
       - name: Print environment
