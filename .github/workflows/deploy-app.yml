@@ -1,0 +1,54 @@
+name: Deploy App
+on: 
+  workflow_call:
+    inputs:
+      build_number:
+        description: Unique identifier for this build
+        required: true
+        default: ''
+        type: string
+      environment:
+        description: Environment to build
+        required: true
+        default: dev
+        type: string
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: Unique identifier for this build
+        required: true
+        default: ''
+        type: string       
+      environment:
+        description: Environment to build
+        required: true
+        default: dev
+        type: string
+jobs:
+  deploy-app:
+    environment: ${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
+    env:
+      BUILD_NUMBER: ${{ github.event_name != 'workflow_dispatch' && inputs.build_number || github.event.inputs.build_number }}
+      ARTIFACTORY_URL: 'https://${{ vars.REGISTRY_URL }}'
+      REGISTRY_URL: ${{ vars.REGISTRY_URL }}
+      ARTIFACT_FOLDER: ${{ vars.ARTIFACT_FOLDER }}${{ vars.FOLDER_SUFFIX }}
+      IMAGE_FOLDER: ${{ vars.IMAGE_FOLDER }}${{ vars.FOLDER_SUFFIX }}
+      ENVIRONMENT: ${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
+      NAMESPACE: ${{ vars.ASMS }}-${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}
+      DEPLOYMENT_FILE: k8s-${{ github.event_name != 'workflow_dispatch' && inputs.environment || github.event.inputs.environment }}-deployment.yaml
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Output information
+      #   run: |
+      #     printenv
+      #     echo "${{ github.event_name }}"
+      - name: Printing env variables
+        run: |
+          echo "BUILD_NUMBER: ${{env.BUILD_NUMBER}}" 
+          echo "ARTIFACTORY_URL: ${{env.ARTIFACTORY_URL}}"
+          echo "REGISTRY_URL: ${{env.REGISTRY_URL}}"
+          echo "ARTIFACT_FOLDER: ${{env.ARTIFACT_FOLDER}}"
+          echo "IMAGE_FOLDER: ${{env.IMAGE_FOLDER}}"
+          echo "ENVIRONMENT: ${{env.ENVIRONMENT}}"
+          echo "NAMESPACE: ${{env.NAMESPACE}}"
+          echo "DEPLOYMENT_FILE: ${{env.DEPLOYMENT_FILE}}"
